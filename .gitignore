@@ -16,3 +16,6 @@ configure
 libtool
 Makefile
 stamp-h1
+
+/test/check_ace
+/test/check_ace.trs
