@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "ace.h"
 
 /* only main should be in this file, to make all other functions in
@@ -5,8 +6,8 @@
    whole program testing framework like Autotest.
 */
 
-int
-main (void)
+int main (void)
 {
+  printf ("Working!\n");
   return 0;
 }
