@@ -1,11 +1,15 @@
 #include <check.h>
 #include <stdlib.h>
 
+#include "check_ace_string.h"
+#include "check_ace_fs.h"
 #include "check_ace_index_filesize.h"
 
 Suite *create_ace_testsuite (void)
 {
   Suite *suite = suite_create ("Ace");
+  suite_add_tcase (suite, create_ace_string_testcase ());
+  suite_add_tcase (suite, create_ace_fs_testcase ());
   suite_add_tcase (suite, create_ace_index_filesize_testcase ());
   return suite;
 }
