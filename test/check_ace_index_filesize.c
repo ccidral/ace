@@ -93,6 +93,33 @@ START_TEST (test_files_of_same_size_have_their_paths_recorded_into_a_file_named_
 }
 END_TEST
 
+START_TEST (test_index_two_sets_of_files_with_same_size)
+{
+  char *path_to_file_of_size_21_1 = ace_tu_fs_create_temp_file_at (source_dirpath, "I wish I had 21 bytes");
+  char *path_to_file_of_size_21_2 = ace_tu_fs_create_temp_file_at (source_dirpath, "I wish I had 21 bytes");
+  
+  char *path_to_file_of_size_40_1 = ace_tu_fs_create_temp_file_at (source_dirpath, "this is going to have a size of 40 bytes");
+  char *path_to_file_of_size_40_2 = ace_tu_fs_create_temp_file_at (source_dirpath, "this is going to have a size of 40 bytes");
+  
+  char *index_filepath_21 = ace_str_join_2 (target_dirpath, "/21");
+  char *index_filepath_40 = ace_str_join_2 (target_dirpath, "/40");
+  
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  
+  ck_assert_int_eq (error_code, ACE_SUCCESS);
+  ck_assert_int_eq (ace_tu_fs_get_number_of_files_in_directory (target_dirpath), 2);
+  
+  ck_assert (ace_fs_does_file_exist (index_filepath_21));
+  ck_assert (ace_fs_does_file_exist (index_filepath_40));
+  
+  ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_21, path_to_file_of_size_21_1));
+  ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_21, path_to_file_of_size_21_2));
+  
+  ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_40, path_to_file_of_size_40_1));
+  ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_40, path_to_file_of_size_40_2));
+}
+END_TEST
+
 
 // test case ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -106,5 +133,6 @@ TCase *create_ace_index_filesize_testcase (void)
   tcase_add_test (testcase, test_target_directory_is_empty_when_source_directory_is_empty);
   tcase_add_test (testcase, test_ignore_empty_files);
   tcase_add_test (testcase, test_files_of_same_size_have_their_paths_recorded_into_a_file_named_after_the_file_size);
+  tcase_add_test (testcase, test_index_two_sets_of_files_with_same_size);
   return testcase;
 }
