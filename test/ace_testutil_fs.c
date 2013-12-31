@@ -1,3 +1,4 @@
+#include <dirent.h>
 #include <ftw.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -60,4 +61,99 @@ void ace_tu_fs_delete_recursively (char *dirpath)
     if(error)
       perror(dirpath);
   }
+}
+
+bool ace_tu_fs_is_directory_empty (char *dirpath)
+{
+  if(!ace_fs_does_directory_exist (dirpath))
+    return true;
+  
+  bool is_empty = true;
+  struct dirent *entity;
+  DIR *directory = opendir (dirpath);
+  while ((entity = readdir (directory)) != NULL)
+  {
+    if(!ace_fs_is_current_or_parent_directory (entity->d_name))
+    {
+      is_empty = false;
+      break;
+    }
+  }
+  closedir (directory);
+  return is_empty;
+}
+
+int ace_tu_fs_get_number_of_files_in_directory (char *dirpath)
+{
+  DIR *directory;
+  struct dirent *entity;
+  int number_of_files = 0;
+  
+  directory = opendir (dirpath);
+  while ((entity = readdir (directory)) != NULL)
+  {
+    if (!ace_fs_is_current_or_parent_directory (entity->d_name))
+    {
+      number_of_files++;
+    }
+  }
+  closedir (directory);
+  
+  return number_of_files;
+}
+
+int ace_tu_fs_get_number_of_lines_in_file (char *filepath)
+{
+  FILE *file;
+  char *line = NULL;
+  ssize_t line_length;
+  size_t buffer_length = 0;
+  int number_of_lines = 0;
+  
+  file = fopen(filepath, "r");
+  while ((line_length = getline(&line, &buffer_length, file)) != -1)
+  {
+    number_of_lines++;
+  }
+  fclose (file);
+  
+  if (line)
+    free (line);
+  
+  return number_of_lines;
+}
+
+bool ace_tu_fs_does_file_contain_line (char *filepath, char *str_without_linebreak)
+{
+  return ace_tu_fs_does_file_contain_line_at(0, filepath, str_without_linebreak);
+}
+
+bool ace_tu_fs_does_file_contain_line_at (int expected_line_number, char *filepath, char *str_without_linebreak)
+{
+  FILE *file;
+  char *line = NULL;
+  int line_number = 0;
+  ssize_t line_length;
+  size_t buffer_length = 0;
+  bool does_line_number_match;
+  bool result = false;
+
+  file = fopen(filepath, "r");
+  while ((line_length = getline(&line, &buffer_length, file)) != -1)
+  {
+    line_number++;
+    line[strlen (line) - 1] = '\0';
+    does_line_number_match = (line_number == expected_line_number) || (expected_line_number <= 0);
+    if (does_line_number_match && (strcmp (line, str_without_linebreak) == 0))
+    {
+      result = true;
+      break;
+    }
+  }
+  fclose (file);
+  
+  if (line)
+    free(line);
+  
+  return result;
 }
