@@ -47,9 +47,7 @@ int index_file (const char *source_filepath, const struct stat *sb, int typeflag
 {
   if (S_ISREG(sb->st_mode))
   {
-    struct dirent *entity;
     char *target_filepath;
-    DIR *source_dir;
     off_t file_size;
     char *file_size_str;
   
