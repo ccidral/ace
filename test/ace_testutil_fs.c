@@ -32,6 +32,13 @@ void ace_tu_fs_append_str_to_file (char *path, char *str)
 
 // implementation ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+char *ace_tu_fs_mksubdir (char *parent_dirpath, char *child_dirname)
+{
+  char *full_path = ace_str_join_3 (parent_dirpath, "/", child_dirname);
+  mkdir (full_path, S_IRWXU);
+  return full_path;
+}
+
 char *ace_tu_fs_create_temp_dir (char *name)
 {
   char template[256];

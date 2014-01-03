@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+char *ace_tu_fs_mksubdir (char *parent_dirpath, char *child_dirname);
 char *ace_tu_fs_create_temp_dir (char *name);
 char *ace_tu_fs_create_temp_file_at (char *dirpath, char *file_contents);
 void ace_tu_fs_delete_recursively (char *dirpath);
