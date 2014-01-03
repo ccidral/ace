@@ -210,14 +210,6 @@ START_TEST (test_search_for_files_deep_in_the_source_directory_tree)
   ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_24, path_to_file_of_size_24_5));
   ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_24, path_to_file_of_size_24_6));
   ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_24, path_to_file_of_size_24_7));
-  
-  ace_tu_fs_delete_recursively (subdir_A);
-  ace_tu_fs_delete_recursively (subdir_B);
-  ace_tu_fs_delete_recursively (subdir_C);
-  ace_tu_fs_delete_recursively (subdir_D);
-  ace_tu_fs_delete_recursively (subdir_E);
-  ace_tu_fs_delete_recursively (subdir_F);
-  ace_tu_fs_delete_recursively (subdir_G);
 }
 END_TEST
 
