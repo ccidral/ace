@@ -7,6 +7,36 @@
 #include "ace_string.h"
 #include "ace_index_filesize.h"
 
+char *file_size_to_str (off_t file_size)
+{
+  char *str = malloc (32);
+  snprintf (str, 32, "%lld", file_size);
+  return str;
+}
+
+char *choose_target_filepath (char *target_filepath)
+{
+  char *singleton_filepath;
+  
+  if (ace_fs_does_file_exist (target_filepath))
+  {
+    return target_filepath;
+  }
+  
+  singleton_filepath = ace_str_join_2 (target_filepath, ".singleton");
+  
+  if (ace_fs_does_file_exist (singleton_filepath))
+  {
+    rename (singleton_filepath, target_filepath);
+    free (singleton_filepath);
+    return target_filepath;
+  }
+  else
+  {
+    free (target_filepath);
+    return singleton_filepath;
+  }
+}
 
 int ace_index_filesize (char *source_dirpath, char *target_dirpath)
 {
@@ -21,7 +51,7 @@ int ace_index_filesize (char *source_dirpath, char *target_dirpath)
   char *target_filepath;
   DIR *source_dir;
   off_t file_size;
-  char index_file_name_with_leading_slash[32];
+  char *file_size_str;
   
   source_dir = opendir (source_dirpath);
   
@@ -33,10 +63,13 @@ int ace_index_filesize (char *source_dirpath, char *target_dirpath)
       file_size = ace_fs_get_file_size (source_filepath);
       if (ace_fs_get_file_size (source_filepath) > 0)
       {
-        snprintf (index_file_name_with_leading_slash, 32, "/%lld", file_size);
-        target_filepath = ace_str_join_2 (target_dirpath, index_file_name_with_leading_slash);
+        file_size_str = file_size_to_str (file_size);
+        target_filepath = choose_target_filepath (ace_str_join_3 (target_dirpath, "/", file_size_str));
+        
         ace_fs_append_line_to_file (target_filepath, source_filepath);
+        
         free (target_filepath);
+        free (file_size_str);
       }
       free (source_filepath);
     }
