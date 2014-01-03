@@ -47,7 +47,7 @@ int index_file (const char *source_filepath, const struct stat *sb, int typeflag
 {
   if (S_ISREG(sb->st_mode))
   {
-    char *target_filepath;
+    char *index_filepath;
     off_t file_size;
     char *file_size_str;
   
@@ -55,11 +55,11 @@ int index_file (const char *source_filepath, const struct stat *sb, int typeflag
     if (file_size > 0)
     {
       file_size_str = file_size_to_str (file_size);
-      target_filepath = choose_target_filepath (ace_str_join_3 (index_dirpath, "/", file_size_str));
+      index_filepath = choose_target_filepath (ace_str_join_3 (index_dirpath, "/", file_size_str));
     
-      ace_fs_append_line_to_file (target_filepath, source_filepath);
+      ace_fs_append_line_to_file (index_filepath, source_filepath);
     
-      free (target_filepath);
+      free (index_filepath);
       free (file_size_str);
     }
   }
