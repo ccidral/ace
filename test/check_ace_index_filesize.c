@@ -122,11 +122,15 @@ END_TEST
 
 START_TEST (test_singleton_files_are_indicated_with_the_word_singleton_appended_to_the_index_file)
 {
+  char *path_to_file_of_size_21_1 = ace_tu_fs_create_temp_file_at (source_dirpath, "3 files with 21 bytes");
+  char *path_to_file_of_size_21_2 = ace_tu_fs_create_temp_file_at (source_dirpath, "3 files with 21 bytes");
+  char *path_to_file_of_size_21_3 = ace_tu_fs_create_temp_file_at (source_dirpath, "3 files with 21 bytes");
   char *path_to_file_of_size_33_1 = ace_tu_fs_create_temp_file_at (source_dirpath, "my twin brother also has 33 bytes");
   char *path_to_file_of_size_33_2 = ace_tu_fs_create_temp_file_at (source_dirpath, "my twin brother also has 33 bytes");
   char *path_to_file_of_size_42 = ace_tu_fs_create_temp_file_at (source_dirpath, "I am the only one file containing 42 bytes");
   char *path_to_file_of_size_13 = ace_tu_fs_create_temp_file_at (source_dirpath, "13 bytes here");
 
+  char *index_filepath_21 = ace_str_join_2 (target_dirpath, "/21");
   char *index_filepath_33 = ace_str_join_2 (target_dirpath, "/33");
   char *index_filepath_42 = ace_str_join_2 (target_dirpath, "/42.singleton");
   char *index_filepath_13 = ace_str_join_2 (target_dirpath, "/13.singleton");
@@ -134,12 +138,16 @@ START_TEST (test_singleton_files_are_indicated_with_the_word_singleton_appended_
   int error_code = ace_index_filesize (source_dirpath, target_dirpath);
 
   ck_assert_int_eq (error_code, ACE_SUCCESS);
-  ck_assert_int_eq (ace_tu_fs_get_number_of_files_in_directory (target_dirpath), 3);
+  ck_assert_int_eq (ace_tu_fs_get_number_of_files_in_directory (target_dirpath), 4);
 
+  ck_assert (ace_fs_does_file_exist (index_filepath_21));
   ck_assert (ace_fs_does_file_exist (index_filepath_33));
   ck_assert (ace_fs_does_file_exist (index_filepath_42));
   ck_assert (ace_fs_does_file_exist (index_filepath_13));
 
+  ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_21, path_to_file_of_size_21_1));
+  ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_21, path_to_file_of_size_21_2));
+  ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_21, path_to_file_of_size_21_3));
   ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_33, path_to_file_of_size_33_1));
   ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_33, path_to_file_of_size_33_2));
   ck_assert (ace_tu_fs_does_file_contain_line (index_filepath_42, path_to_file_of_size_42));
