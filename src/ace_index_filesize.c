@@ -80,8 +80,11 @@ int ace_index_filesize (char *source_dirpath, char *target_dirpath)
   index_dirpath = target_dirpath;
   
   int error = nftw (source_dirpath, index_file, 64, FTW_DEPTH | FTW_PHYS);
-  if(error)
+
+  if(error) {
     perror(source_dirpath);
+    return ACE_UNKNOWN_ERROR;
+  }
 
   return ACE_SUCCESS;
 }
