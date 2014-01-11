@@ -6,11 +6,12 @@
 #include "../src/ace_string.h"
 #include "../src/ace_index_filesize.h"
 #include "ace_testutil_fs.h"
+#include "ace_testutil_stringlist.h"
 
 
 char *source_dirpath;
 char *target_dirpath;
-
+ace_tu_strlist_t files_found;
 
 // fixture ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -26,13 +27,24 @@ void teardown_test (void)
   ace_tu_fs_delete_recursively (target_dirpath);
 }
 
+void observer_function (const char *filepath)
+{
+  char *filepath_clone = malloc (strlen (filepath));
+  strcpy (filepath_clone, filepath);
+  ace_tu_strlist_append (filepath_clone, &files_found);
+}
+
+void noop_observer_function (const char *filepath)
+{
+}
+
 
 // unit tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 START_TEST (test_return_error_when_source_directory_does_not_exist)
 {
   rmdir (source_dirpath);
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
   ck_assert_int_eq (error_code, ACE_ERR_NO_SOURCE_DIR);
 }
 END_TEST
@@ -40,21 +52,21 @@ END_TEST
 START_TEST (test_return_error_when_target_directory_does_not_exist)
 {
   rmdir (target_dirpath);
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
   ck_assert_int_eq (error_code, ACE_ERR_NO_TARGET_DIR);
 }
 END_TEST
 
 START_TEST (test_return_success_when_both_source_and_target_directories_do_exist)
 {
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
   ck_assert_int_eq (error_code, ACE_SUCCESS);
 }
 END_TEST
 
 START_TEST (test_target_directory_is_empty_when_source_directory_is_empty)
 {
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
   ck_assert_int_eq (error_code, ACE_SUCCESS);
   ck_assert_msg (ace_tu_fs_is_directory_empty (target_dirpath), "The target directory should be empty");
 }
@@ -66,7 +78,7 @@ START_TEST (test_ignore_empty_files)
   ace_tu_fs_create_temp_file_at (source_dirpath, "");
   ace_tu_fs_create_temp_file_at (source_dirpath, "");
   
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
   
   ck_assert_int_eq (error_code, ACE_SUCCESS);
   ck_assert_msg (ace_tu_fs_is_directory_empty (target_dirpath), "The target directory should be empty");
@@ -80,7 +92,7 @@ START_TEST (test_files_of_same_size_have_their_paths_recorded_into_a_file_named_
   char *filepath_3 = ace_tu_fs_create_temp_file_at (source_dirpath, "this text has 22 bytes");
   
   char *index_filepath = ace_str_join_2 (target_dirpath, "/22");
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
   
   ck_assert_int_eq (error_code, ACE_SUCCESS);
   ck_assert_int_eq (ace_tu_fs_get_number_of_files_in_directory (target_dirpath), 1);
@@ -103,7 +115,7 @@ START_TEST (test_index_two_sets_of_files_with_same_size)
   char *index_filepath_21 = ace_str_join_2 (target_dirpath, "/21");
   char *index_filepath_40 = ace_str_join_2 (target_dirpath, "/40");
   
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
   
   ck_assert_int_eq (error_code, ACE_SUCCESS);
   ck_assert_int_eq (ace_tu_fs_get_number_of_files_in_directory (target_dirpath), 2);
@@ -134,7 +146,7 @@ START_TEST (test_singleton_files_are_indicated_with_the_word_singleton_appended_
   char *index_filepath_42 = ace_str_join_2 (target_dirpath, "/42.singleton");
   char *index_filepath_13 = ace_str_join_2 (target_dirpath, "/13.singleton");
 
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
 
   ck_assert_int_eq (error_code, ACE_SUCCESS);
   ck_assert_int_eq (ace_tu_fs_get_number_of_files_in_directory (target_dirpath), 4);
@@ -185,7 +197,7 @@ START_TEST (test_search_for_files_deep_in_the_source_directory_tree)
   char *index_filepath_42 = ace_str_join_2 (target_dirpath, "/42.singleton");
   char *index_filepath_13 = ace_str_join_2 (target_dirpath, "/13.singleton");
 
-  int error_code = ace_index_filesize (source_dirpath, target_dirpath);
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, noop_observer_function);
 
   ck_assert_int_eq (error_code, ACE_SUCCESS);
   ck_assert_int_eq (ace_tu_fs_get_number_of_files_in_directory (target_dirpath), 5);
@@ -213,6 +225,24 @@ START_TEST (test_search_for_files_deep_in_the_source_directory_tree)
 }
 END_TEST
 
+START_TEST (test_call_observer_function_for_each_file_found)
+{
+  char *filepath_1 = ace_tu_fs_create_temp_file_at (source_dirpath, "Hello world");
+  char *filepath_2 = ace_tu_fs_create_temp_file_at (source_dirpath, "Hello world");
+  char *filepath_3 = ace_tu_fs_create_temp_file_at (source_dirpath, "Foo, James Foo");
+  
+  ace_tu_strlist_init (&files_found);
+  
+  int error_code = ace_index_filesize (source_dirpath, target_dirpath, observer_function);
+  
+  ck_assert_int_eq (error_code, ACE_SUCCESS);
+  ck_assert_int_eq (ace_tu_strlist_size (&files_found), 3);
+  ck_assert (ace_tu_strlist_contains (filepath_1, &files_found));
+  ck_assert (ace_tu_strlist_contains (filepath_2, &files_found));
+  ck_assert (ace_tu_strlist_contains (filepath_3, &files_found));
+}
+END_TEST
+
 
 // test case ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -229,5 +259,6 @@ TCase *create_ace_index_filesize_testcase (void)
   tcase_add_test (testcase, test_index_two_sets_of_files_with_same_size);
   tcase_add_test (testcase, test_singleton_files_are_indicated_with_the_word_singleton_appended_to_the_index_file);
   tcase_add_test (testcase, test_search_for_files_deep_in_the_source_directory_tree);
+  tcase_add_test (testcase, test_call_observer_function_for_each_file_found);
   return testcase;
 }

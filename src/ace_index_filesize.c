@@ -11,6 +11,7 @@
 #include "ace_index_filesize.h"
 
 char *index_dirpath;
+void (*actual_observer)(const char *);
 
 char *file_size_to_str (off_t file_size)
 {
@@ -50,8 +51,10 @@ int index_file (const char *filepath, const struct stat *sb, int typeflag, struc
     char *index_filepath;
     off_t file_size;
     char *file_size_str;
-  
+    
     file_size = ace_fs_get_file_size (filepath);
+    
+    actual_observer (filepath);
     
     if (file_size > 0)
     {
@@ -68,7 +71,7 @@ int index_file (const char *filepath, const struct stat *sb, int typeflag, struc
   return 0;
 }
 
-int ace_index_filesize (char *source_dirpath, char *target_dirpath)
+int ace_index_filesize (char *source_dirpath, char *target_dirpath, void (*observer)(const char *))
 {
   if (!ace_fs_does_directory_exist (source_dirpath))
     return ACE_ERR_NO_SOURCE_DIR;
@@ -77,6 +80,7 @@ int ace_index_filesize (char *source_dirpath, char *target_dirpath)
     return ACE_ERR_NO_TARGET_DIR;
   
   index_dirpath = target_dirpath;
+  actual_observer = observer;
   
   int error = nftw (source_dirpath, index_file, 64, FTW_DEPTH | FTW_PHYS);
 

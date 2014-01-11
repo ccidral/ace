@@ -7,6 +7,7 @@ check_ace_SOURCES = \
   check_ace_fs.c               check_ace_fs.h \
   check_ace_index_filesize.c   check_ace_index_filesize.h \
   ace_testutil_fs.c            ace_testutil_fs.h \
+  ace_testutil_stringlist.c    ace_testutil_stringlist.h \
   $(top_builddir)/src/ace_errcode.h \
   $(top_builddir)/src/ace_string.h \
   $(top_builddir)/src/ace_fs.h \
