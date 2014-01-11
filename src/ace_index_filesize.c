@@ -19,26 +19,26 @@ char *file_size_to_str (off_t file_size)
   return str;
 }
 
-char *choose_target_filepath (char *target_filepath)
+char *choose_index_filepath (char *index_filepath)
 {
   char *singleton_filepath;
   
-  if (ace_fs_does_file_exist (target_filepath))
+  if (ace_fs_does_file_exist (index_filepath))
   {
-    return target_filepath;
+    return index_filepath;
   }
   
-  singleton_filepath = ace_str_join_2 (target_filepath, ".singleton");
+  singleton_filepath = ace_str_join_2 (index_filepath, ".singleton");
   
   if (ace_fs_does_file_exist (singleton_filepath))
   {
-    rename (singleton_filepath, target_filepath);
+    rename (singleton_filepath, index_filepath);
     free (singleton_filepath);
-    return target_filepath;
+    return index_filepath;
   }
   else
   {
-    free (target_filepath);
+    free (index_filepath);
     return singleton_filepath;
   }
 }
@@ -56,7 +56,7 @@ int index_file (const char *filepath, const struct stat *sb, int typeflag, struc
     if (file_size > 0)
     {
       file_size_str = file_size_to_str (file_size);
-      index_filepath = choose_target_filepath (ace_str_join_3 (index_dirpath, "/", file_size_str));
+      index_filepath = choose_index_filepath (ace_str_join_3 (index_dirpath, "/", file_size_str));
     
       ace_fs_append_line_to_file (index_filepath, filepath);
     
