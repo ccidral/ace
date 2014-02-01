@@ -10,7 +10,7 @@
 #include "ace_string.h"
 #include "ace_index_filesize.h"
 
-char *index_dirpath;
+char *actual_index_dirpath;
 void (*actual_observer)(const char *);
 
 char *file_size_to_str (off_t file_size)
@@ -59,7 +59,7 @@ int index_file (const char *filepath, const struct stat *sb, int typeflag, struc
     if (file_size > 0)
     {
       file_size_str = file_size_to_str (file_size);
-      index_filepath = choose_index_filepath (ace_str_join_3 (index_dirpath, "/", file_size_str));
+      index_filepath = choose_index_filepath (ace_str_join_3 (actual_index_dirpath, "/", file_size_str));
     
       ace_fs_append_line_to_file (index_filepath, filepath);
     
@@ -71,15 +71,15 @@ int index_file (const char *filepath, const struct stat *sb, int typeflag, struc
   return 0;
 }
 
-int ace_index_filesize (char *source_dirpath, char *target_dirpath, void (*observer)(const char *))
+int ace_index_filesize (char *source_dirpath, char *index_dirpath, void (*observer)(const char *))
 {
   if (!ace_fs_does_directory_exist (source_dirpath))
     return ACE_ERR_NO_SOURCE_DIR;
 
-  if (!ace_fs_does_directory_exist (target_dirpath))
+  if (!ace_fs_does_directory_exist (index_dirpath))
     return ACE_ERR_NO_TARGET_DIR;
   
-  index_dirpath = target_dirpath;
+  actual_index_dirpath = index_dirpath;
   actual_observer = observer;
   
   int error = nftw (source_dirpath, index_file, 64, FTW_DEPTH | FTW_PHYS);
