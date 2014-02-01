@@ -7,7 +7,7 @@
 
 // unit tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-START_TEST (test_file_does_exist)
+START_TEST (file_does_exist)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "~~ file contents ~~");
@@ -16,7 +16,7 @@ START_TEST (test_file_does_exist)
 }
 END_TEST
 
-START_TEST (test_file_does_not_exist)
+START_TEST (file_does_not_exist)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "~~ file contents ~~");
@@ -26,7 +26,7 @@ START_TEST (test_file_does_not_exist)
 }
 END_TEST
 
-START_TEST (test_file_does_not_exist_when_path_refers_to_a_directory)
+START_TEST (file_does_not_exist_when_path_refers_to_a_directory)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   ck_assert_msg (!ace_fs_does_file_exist (dirpath), "File should not exist because it's a directory");
@@ -34,7 +34,7 @@ START_TEST (test_file_does_not_exist_when_path_refers_to_a_directory)
 }
 END_TEST
 
-START_TEST (test_directory_does_exist)
+START_TEST (directory_does_exist)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   ck_assert_msg (ace_fs_does_directory_exist (dirpath), "Directory should exist");
@@ -42,7 +42,7 @@ START_TEST (test_directory_does_exist)
 }
 END_TEST
 
-START_TEST (test_directory_does_not_exist)
+START_TEST (directory_does_not_exist)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   rmdir (dirpath);
@@ -50,7 +50,7 @@ START_TEST (test_directory_does_not_exist)
 }
 END_TEST
 
-START_TEST (test_directory_does_not_exist_when_path_refers_to_a_file)
+START_TEST (directory_does_not_exist_when_path_refers_to_a_file)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "~~ file contents ~~");
@@ -59,21 +59,21 @@ START_TEST (test_directory_does_not_exist_when_path_refers_to_a_file)
 }
 END_TEST
 
-START_TEST (test_is_current_or_parent_directory)
+START_TEST (is_current_or_parent_directory)
 {
   ck_assert_msg (ace_fs_is_current_or_parent_directory ("."));
   ck_assert_msg (ace_fs_is_current_or_parent_directory (".."));
 }
 END_TEST
 
-START_TEST (test_is_not_current_or_parent_directory)
+START_TEST (is_not_current_or_parent_directory)
 {
   ck_assert_msg (!ace_fs_is_current_or_parent_directory ("..."));
   ck_assert_msg (!ace_fs_is_current_or_parent_directory ("foobar"));
 }
 END_TEST
 
-START_TEST (test_file_size_is_zero_when_file_does_not_exist)
+START_TEST (file_size_is_zero_when_file_does_not_exist)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "~~ file contents ~~");
@@ -84,7 +84,7 @@ START_TEST (test_file_size_is_zero_when_file_does_not_exist)
 }
 END_TEST
 
-START_TEST (test_file_size_is_zero_when_path_refers_to_a_directory)
+START_TEST (file_size_is_zero_when_path_refers_to_a_directory)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   off_t file_size = ace_fs_get_file_size (dirpath);
@@ -93,7 +93,7 @@ START_TEST (test_file_size_is_zero_when_path_refers_to_a_directory)
 }
 END_TEST
 
-START_TEST (test_file_size_is_zero_when_file_is_empty)
+START_TEST (file_size_is_zero_when_file_is_empty)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "");
@@ -103,7 +103,7 @@ START_TEST (test_file_size_is_zero_when_file_is_empty)
 }
 END_TEST
 
-START_TEST (test_file_size)
+START_TEST (file_size)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "this file has 22 bytes");
@@ -113,7 +113,7 @@ START_TEST (test_file_size)
 }
 END_TEST
 
-START_TEST (test_append_one_line_to_file)
+START_TEST (append_one_line_to_file)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "");
@@ -127,7 +127,7 @@ START_TEST (test_append_one_line_to_file)
 }
 END_TEST
 
-START_TEST (test_append_two_lines_to_file)
+START_TEST (append_two_lines_to_file)
 {
   char *dirpath = ace_tu_fs_create_temp_dir ("fs_test");
   char *filepath = ace_tu_fs_create_temp_file_at (dirpath, "");
@@ -149,19 +149,19 @@ END_TEST
 TCase *create_ace_fs_testcase (void)
 {
   TCase *testcase = tcase_create ("File system functions");
-  tcase_add_test (testcase, test_file_does_exist);
-  tcase_add_test (testcase, test_file_does_not_exist);
-  tcase_add_test (testcase, test_file_does_not_exist_when_path_refers_to_a_directory);
-  tcase_add_test (testcase, test_directory_does_exist);
-  tcase_add_test (testcase, test_directory_does_not_exist);
-  tcase_add_test (testcase, test_directory_does_not_exist_when_path_refers_to_a_file);
-  tcase_add_test (testcase, test_is_current_or_parent_directory);
-  tcase_add_test (testcase, test_is_not_current_or_parent_directory);
-  tcase_add_test (testcase, test_file_size_is_zero_when_file_does_not_exist);
-  tcase_add_test (testcase, test_file_size_is_zero_when_path_refers_to_a_directory);
-  tcase_add_test (testcase, test_file_size_is_zero_when_file_is_empty);
-  tcase_add_test (testcase, test_file_size);
-  tcase_add_test (testcase, test_append_one_line_to_file);
-  tcase_add_test (testcase, test_append_two_lines_to_file);
+  tcase_add_test (testcase, file_does_exist);
+  tcase_add_test (testcase, file_does_not_exist);
+  tcase_add_test (testcase, file_does_not_exist_when_path_refers_to_a_directory);
+  tcase_add_test (testcase, directory_does_exist);
+  tcase_add_test (testcase, directory_does_not_exist);
+  tcase_add_test (testcase, directory_does_not_exist_when_path_refers_to_a_file);
+  tcase_add_test (testcase, is_current_or_parent_directory);
+  tcase_add_test (testcase, is_not_current_or_parent_directory);
+  tcase_add_test (testcase, file_size_is_zero_when_file_does_not_exist);
+  tcase_add_test (testcase, file_size_is_zero_when_path_refers_to_a_directory);
+  tcase_add_test (testcase, file_size_is_zero_when_file_is_empty);
+  tcase_add_test (testcase, file_size);
+  tcase_add_test (testcase, append_one_line_to_file);
+  tcase_add_test (testcase, append_two_lines_to_file);
   return testcase;
 }

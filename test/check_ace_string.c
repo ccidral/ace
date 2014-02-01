@@ -5,21 +5,21 @@
 
 // unit tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-START_TEST (test_join_two_strings)
+START_TEST (join_two_strings)
 {
   char *result = ace_str_join_2 ("hello", " world");
   ck_assert_str_eq (result, "hello world");
 }
 END_TEST
 
-START_TEST (test_join_three_strings)
+START_TEST (join_three_strings)
 {
   char *result = ace_str_join_3 ("whiskey", " tango", " foxtrot");
   ck_assert_str_eq (result, "whiskey tango foxtrot");
 }
 END_TEST
 
-START_TEST (test_string_ends_with)
+START_TEST (string_ending)
 {
   ck_assert (ace_str_ends_with ("", ""));
   ck_assert (ace_str_ends_with ("a", "a"));
@@ -38,8 +38,8 @@ END_TEST
 TCase *create_ace_string_testcase (void)
 {
   TCase *testcase = tcase_create ("String utils");
-  tcase_add_test (testcase, test_join_two_strings);
-  tcase_add_test (testcase, test_join_three_strings);
-  tcase_add_test (testcase, test_string_ends_with);
+  tcase_add_test (testcase, join_two_strings);
+  tcase_add_test (testcase, join_three_strings);
+  tcase_add_test (testcase, string_ending);
   return testcase;
 }
