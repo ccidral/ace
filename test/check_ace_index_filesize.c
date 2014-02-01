@@ -131,7 +131,7 @@ START_TEST (index_two_sets_of_files_with_same_size)
 }
 END_TEST
 
-START_TEST (singleton_files_are_indicated_with_the_word_singleton_appended_to_the_index_file)
+START_TEST (index_files_containing_only_one_path_have_their_names_suffixed_with_dot_zero)
 {
   char *path_to_file_of_size_21_1 = ace_tu_fs_create_temp_file_at (source_dirpath, "3 files with 21 bytes");
   char *path_to_file_of_size_21_2 = ace_tu_fs_create_temp_file_at (source_dirpath, "3 files with 21 bytes");
@@ -143,8 +143,8 @@ START_TEST (singleton_files_are_indicated_with_the_word_singleton_appended_to_th
 
   char *index_filepath_21 = ace_str_join_2 (index_dirpath, "/21");
   char *index_filepath_33 = ace_str_join_2 (index_dirpath, "/33");
-  char *index_filepath_42 = ace_str_join_2 (index_dirpath, "/42.singleton");
-  char *index_filepath_13 = ace_str_join_2 (index_dirpath, "/13.singleton");
+  char *index_filepath_42 = ace_str_join_2 (index_dirpath, "/42.0");
+  char *index_filepath_13 = ace_str_join_2 (index_dirpath, "/13.0");
 
   int error_code = ace_index_filesize (source_dirpath, index_dirpath, noop_observer_function);
 
@@ -194,8 +194,8 @@ START_TEST (search_for_files_deep_in_the_source_directory_tree)
   char *index_filepath_21 = ace_str_join_2 (index_dirpath, "/21");
   char *index_filepath_24 = ace_str_join_2 (index_dirpath, "/24");
   char *index_filepath_33 = ace_str_join_2 (index_dirpath, "/33");
-  char *index_filepath_42 = ace_str_join_2 (index_dirpath, "/42.singleton");
-  char *index_filepath_13 = ace_str_join_2 (index_dirpath, "/13.singleton");
+  char *index_filepath_42 = ace_str_join_2 (index_dirpath, "/42.0");
+  char *index_filepath_13 = ace_str_join_2 (index_dirpath, "/13.0");
 
   int error_code = ace_index_filesize (source_dirpath, index_dirpath, noop_observer_function);
 
@@ -257,7 +257,7 @@ TCase *create_ace_index_filesize_testcase (void)
   tcase_add_test (testcase, ignore_empty_files);
   tcase_add_test (testcase, files_of_same_size_have_their_paths_recorded_into_a_file_named_after_the_file_size);
   tcase_add_test (testcase, index_two_sets_of_files_with_same_size);
-  tcase_add_test (testcase, singleton_files_are_indicated_with_the_word_singleton_appended_to_the_index_file);
+  tcase_add_test (testcase, index_files_containing_only_one_path_have_their_names_suffixed_with_dot_zero);
   tcase_add_test (testcase, search_for_files_deep_in_the_source_directory_tree);
   tcase_add_test (testcase, call_observer_function_for_each_file_found);
   return testcase;

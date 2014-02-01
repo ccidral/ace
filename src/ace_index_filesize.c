@@ -29,7 +29,7 @@ char *choose_index_filepath (char *index_filepath)
     return index_filepath;
   }
   
-  singleton_filepath = ace_str_join_2 (index_filepath, ".singleton");
+  singleton_filepath = ace_str_join_2 (index_filepath, ".0");
   
   if (ace_fs_does_file_exist (singleton_filepath))
   {
